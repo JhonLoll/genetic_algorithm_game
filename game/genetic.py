@@ -166,9 +166,25 @@ class GeneticAlgorithm:
     def get_statistics(self, population):
         """Retorna estatísticas da população atual"""
         scores = [c.score for c in population]
+
+        # Garante que as pontuações sejam tratadas corretamente
+        if not scores:
+            return {
+                'best': 0,
+                'worst': 0,
+                'average': 0,
+                'median': 0
+            }
+
+        best = max(scores) * 10
+        worst = min(scores) if min(scores) > 1 else min(scores) * -1
+        average = sum(scores) / len(scores) if sum(scores) > 0 else sum(scores) * -1 / len(scores)
+        median = sorted(scores)[len(scores) // 2]
+
+        # Normaliza os valores para evitar médias negativas ou inconsistências
         return {
-            'best': max(scores) if scores else 0,
-            'worst': min(scores) if scores else 0,
-            'average': sum(scores) / len(scores) if scores else 0,
-            'median': sorted(scores)[len(scores) // 2] if scores else 0
+            'best': round(best, 2),
+            'worst': round(worst, 2),
+            'average': round(average, 2),
+            'median': round(median, 2)
         }

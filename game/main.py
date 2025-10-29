@@ -25,7 +25,7 @@ pygame.display.set_caption("Genetic Algorithm - Evolução de Criaturas")
 
 # Configurações do jogo
 GROUND_Y = SCREEN_HEIGHT - 100
-GENERATION_TIME = 3  # segundos por geração
+GENERATION_TIME = 8  # segundos por geração
 FPS = 60
 
 # Components
@@ -33,7 +33,7 @@ bg = Background(SCREEN_WIDTH, SCREEN_HEIGHT)
 
 # Spawn inicial aleatório da maçã (mantém margens para não sair da tela)
 apple_x = random.randint(50, SCREEN_WIDTH - 50)
-apple_y = random.randint(50, GROUND_Y - 150)
+apple_y = 50
 apple = Apple(apple_x, apple_y)
 
 platform = Platform(0, GROUND_Y, SCREEN_WIDTH, 100)
@@ -84,7 +84,7 @@ while running:
                 creatures = ga.evolve(creatures, SCREEN_WIDTH // 2, GROUND_Y)
                 # Ao evoluir manualmente, respawna a maçã em posição aleatória
                 apple_x = random.randint(50, SCREEN_WIDTH - 50)
-                apple_y = random.randint(50, GROUND_Y - 150)
+                apple_y = 50
                 apple.rect.center = (apple_x, apple_y)
                 generation_timer = 0
             
@@ -125,7 +125,7 @@ while running:
             # Respawna a maçã a cada nova geração para introduzir
             # variabilidade no ambiente (aleatoriedade no spawn)
             apple_x = random.randint(50, SCREEN_WIDTH - 50)
-            apple_y = random.randint(50, GROUND_Y - 150)
+            apple_y = 50
             apple.rect.center = (apple_x, apple_y)
             generation_timer = 0
     
@@ -140,6 +140,8 @@ while running:
     
     # Informações na tela
     stats = ga.get_statistics(creatures)
+
+    print(stats)
     
     # Geração
     gen_text = font.render(f"Geração: {ga.generation}", True, WHITE)

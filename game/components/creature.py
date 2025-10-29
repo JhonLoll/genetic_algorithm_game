@@ -18,7 +18,7 @@ class Creature:
                 'leg_length': random.uniform(10, 30),
                 'neck_length': random.uniform(7.5, 40),
                 'body_size': random.uniform(7.5, 17.5),
-                'jump_strength': random.uniform(2, 5),
+                'jump_strength': random.uniform(2, 15),
                 'color': (random.randint(100, 255), random.randint(100, 255), random.randint(100, 255)),
                 'jump_timing': random.uniform(1, 3.0)  # Quando pular em segundos
             }
@@ -136,13 +136,17 @@ class Creature:
         # Calcula pontuação (distância da cabeça até a maçã)
         head_pos = self.head_pos
         dist = head_pos.distance_to(target_pos)
-        self.score = max(0, 100 / (dist + 1))
+        self.score = max(0, 200 / (dist + 1))  # Ajusta o fator de pontuação para maior variação
 
         # Bônus por chegar perto
-        if dist < 30:
-            self.score += 25
-        if dist < 15:
-            self.score += 75
+        if dist < 50:
+            self.score += 50  # Aumenta o bônus para encorajar aproximação
+        if dist < 20:
+            self.score += 100
+
+        # Penalidade por ficar muito longe
+        if dist > 300:
+            self.score -= 10  # Penalidade leve para criaturas muito distantes
 
         try:
             dir_vec = (pygame.Vector2(target_pos) - head_pos)
@@ -150,18 +154,11 @@ class Creature:
                 dir_norm = dir_vec.normalize()
             else:
                 dir_norm = pygame.Vector2(0, 0)
-            # Bônus horizontal (maçã à direita)
-            if dir_norm.x > 0.5:
-                self.score += 10  # maçã principalmente à direita
-            elif dir_norm.x < -0.5:
-                self.score += 10  # maçã principalmente à esquerda
-            # Bônus vertical (maçã acima)
+
+            # Bônus adicional para criaturas que se movem na direção correta
             if dir_norm.y < -0.5:
-                self.score += 8   # maçã acima (incentiva pular)
-            # Penalidade leve se a maçã estiver atrás (oposto ao olhar)
-            # (opcional) if dir_norm.x * facing_direction < -0.5: self.score -= 5
+                self.score += 10  # Incentiva pular
         except Exception:
-            # Mantém seguro caso haja algum problema com vetores
             pass
 
     def draw(self, screen):
