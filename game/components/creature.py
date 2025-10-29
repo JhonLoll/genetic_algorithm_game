@@ -68,23 +68,33 @@ class Creature:
     def update(self, target_pos, width, height, ground_y, delta_time, other_creatures):
         if not self.alive:
             return
-        
+
+        # Direção para a maçã (movimento direcionado)
+        direction_to_target = pygame.Vector2(target_pos) - self.pos
+        if direction_to_target.length() > 0:
+            direction_to_target = direction_to_target.normalize()
+        else:
+            direction_to_target = pygame.Vector2(0, 0)
+
+        # Ajusta a velocidade para seguir a direção da maçã
+        self.vel.x = direction_to_target.x * 2  # Velocidade horizontal ajustada
+
         # Timer para pulo automático
         self.jump_timer += delta_time
-        
+
         # Pula no tempo definido pelo DNA
         if not self.has_jumped and self.jump_timer >= self.dna['jump_timing']:
             self.jump()
-        
+
         # Gravidade
         GRAVITY = 0.5
         if not self.on_ground and not self.standing_on:
             self.vel.y += GRAVITY
             self.vel.y = min(self.vel.y, 20)  # Velocidade máxima de queda
-        
+
         # Atualiza posição
         self.pos += self.vel
-        
+
         # Colisão com o chão
         if self.pos.y >= ground_y:
             self.pos.y = ground_y
@@ -93,7 +103,7 @@ class Creature:
             self.can_jump = True
         else:
             self.on_ground = False
-        
+
         # Verifica empilhamento com outras criaturas
         self.standing_on = None
         if self.vel.y > 0:  # Caindo
@@ -101,37 +111,57 @@ class Creature:
                 if other != self and other.alive:
                     other_rect = other.get_collision_rect()
                     my_rect = self.get_collision_rect()
-                    
+
                     # Se estou caindo sobre outra criatura
                     if (my_rect.colliderect(other_rect) and 
                         self.pos.y < other.pos.y and
                         abs(self.pos.x - other.pos.x) < self.dna['body_size']):
-                        
+
                         # Fica em cima da outra criatura
                         self.pos.y = other.pos.y - other.total_height - 5
                         self.vel.y = 0
                         self.standing_on = other
                         self.can_jump = True
                         break
-        
+
         # Colisão com as paredes
         if self.pos.x < 0 or self.pos.x > width:
             self.alive = False
-        
+
         # Cai abaixo do chão
         if self.pos.y > ground_y + 100:
             self.alive = False
-        
+
         # Calcula pontuação (distância da cabeça até a maçã)
         head_pos = self.head_pos
         dist = head_pos.distance_to(target_pos)
         self.score = max(0, 100 / (dist + 1))
-        
+
         # Bônus por chegar perto
         if dist < 30:
             self.score += 25
         if dist < 15:
             self.score += 75
+
+        try:
+            dir_vec = (pygame.Vector2(target_pos) - head_pos)
+            if dir_vec.length() > 0:
+                dir_norm = dir_vec.normalize()
+            else:
+                dir_norm = pygame.Vector2(0, 0)
+            # Bônus horizontal (maçã à direita)
+            if dir_norm.x > 0.5:
+                self.score += 10  # maçã principalmente à direita
+            elif dir_norm.x < -0.5:
+                self.score += 10  # maçã principalmente à esquerda
+            # Bônus vertical (maçã acima)
+            if dir_norm.y < -0.5:
+                self.score += 8   # maçã acima (incentiva pular)
+            # Penalidade leve se a maçã estiver atrás (oposto ao olhar)
+            # (opcional) if dir_norm.x * facing_direction < -0.5: self.score -= 5
+        except Exception:
+            # Mantém seguro caso haja algum problema com vetores
+            pass
 
     def draw(self, screen):
         if not self.alive:

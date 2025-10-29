@@ -1,7 +1,7 @@
 import pygame
+import random
 from components.background import Background
 from components.apple import Apple
-from components.creature import Creature
 from components.platform import Platform
 from genetic import GeneticAlgorithm
 
@@ -30,7 +30,12 @@ FPS = 60
 
 # Components
 bg = Background(SCREEN_WIDTH, SCREEN_HEIGHT)
-apple = Apple(SCREEN_WIDTH // 2, 100)
+
+# Spawn inicial aleatório da maçã (mantém margens para não sair da tela)
+apple_x = random.randint(50, SCREEN_WIDTH - 50)
+apple_y = random.randint(50, GROUND_Y - 150)
+apple = Apple(apple_x, apple_y)
+
 platform = Platform(0, GROUND_Y, SCREEN_WIDTH, 100)
 
 # Algoritmo Genético
@@ -77,6 +82,10 @@ while running:
             elif event.key == pygame.K_n:
                 # Próxima geração manualmente
                 creatures = ga.evolve(creatures, SCREEN_WIDTH // 2, GROUND_Y)
+                # Ao evoluir manualmente, respawna a maçã em posição aleatória
+                apple_x = random.randint(50, SCREEN_WIDTH - 50)
+                apple_y = random.randint(50, GROUND_Y - 150)
+                apple.rect.center = (apple_x, apple_y)
                 generation_timer = 0
             
             elif event.key == pygame.K_a:
@@ -104,6 +113,11 @@ while running:
         # Evolui automaticamente quando todas morrerem ou tempo acabar
         if (all_dead or generation_timer >= GENERATION_TIME) and auto_evolve:
             creatures = ga.evolve(creatures, SCREEN_WIDTH // 2, GROUND_Y)
+            # Respawna a maçã a cada nova geração para introduzir
+            # variabilidade no ambiente (aleatoriedade no spawn)
+            apple_x = random.randint(50, SCREEN_WIDTH - 50)
+            apple_y = random.randint(50, GROUND_Y - 150)
+            apple.rect.center = (apple_x, apple_y)
             generation_timer = 0
     
     # Desenha tudo
