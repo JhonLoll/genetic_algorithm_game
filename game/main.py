@@ -95,9 +95,10 @@ while running:
     if not paused:
         # Timer da geração
         generation_timer += delta_time
-        
+
         # Atualiza criaturas
         all_dead = True
+        best_creature = None
         for creature in creatures:
             if creature.alive:
                 all_dead = False
@@ -109,7 +110,15 @@ while running:
                     delta_time,
                     creatures
                 )
-        
+
+            # Identifica a melhor criatura
+            if best_creature is None or creature.score > best_creature.score:
+                best_creature = creature
+
+        # Marca a melhor criatura
+        for creature in creatures:
+            creature.is_best = (creature == best_creature)
+
         # Evolui automaticamente quando todas morrerem ou tempo acabar
         if (all_dead or generation_timer >= GENERATION_TIME) and auto_evolve:
             creatures = ga.evolve(creatures, SCREEN_WIDTH // 2, GROUND_Y)

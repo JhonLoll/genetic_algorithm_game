@@ -27,6 +27,7 @@ class Creature:
         
         self.jump_timer = 0
         self.has_jumped = False
+        self.is_best = False  # Indica se a criatura é a melhor
         
     @property
     def mass(self):
@@ -166,9 +167,9 @@ class Creature:
     def draw(self, screen):
         if not self.alive:
             return
-        
+
         color = self.dna['color']
-        
+
         # Pernas (duas linhas)
         leg_width = 4
         leg_spacing = self.dna['body_size'] * 0.6
@@ -176,27 +177,35 @@ class Creature:
         right_leg_x = self.pos.x + leg_spacing / 2
         leg_bottom_y = self.pos.y
         leg_top_y = self.pos.y - self.dna['leg_length']
-        
+
         pygame.draw.line(screen, color, (left_leg_x, leg_bottom_y), (left_leg_x, leg_top_y), leg_width)
         pygame.draw.line(screen, color, (right_leg_x, leg_bottom_y), (right_leg_x, leg_top_y), leg_width)
-        
+
         # Corpo (círculo)
         body_y = self.pos.y - self.dna['leg_length'] - self.dna['body_size']/2
         pygame.draw.circle(screen, color, (int(self.pos.x), int(body_y)), int(self.dna['body_size']/2))
-        
+
         # Pescoço (linha)
         neck_bottom_y = body_y - self.dna['body_size']/2
         neck_top_y = neck_bottom_y - self.dna['neck_length']
         pygame.draw.line(screen, color, (self.pos.x, neck_bottom_y), (self.pos.x, neck_top_y), 4)
-        
+
         # Cabeça (círculo menor)
         head_size = 8
         head_pos = self.head_pos
         pygame.draw.circle(screen, color, (int(head_pos.x), int(head_pos.y)), head_size)
-        
+
         # Olhos
         pygame.draw.circle(screen, (0, 0, 0), (int(head_pos.x - 3), int(head_pos.y - 1)), 2)
         pygame.draw.circle(screen, (0, 0, 0), (int(head_pos.x + 3), int(head_pos.y - 1)), 2)
-        
+
+        # Desenha coroa se for a melhor criatura
+        if self.is_best:
+            crown_image = pygame.image.load("game/assets/crown.png").convert_alpha()
+            crown_image = pygame.transform.scale(crown_image, (30, 30))
+            crown_x = int(head_pos.x - 15)  # Centraliza a coroa
+            crown_y = int(head_pos.y - 40)  # Posiciona acima da cabeça
+            screen.blit(crown_image, (crown_x, crown_y))
+
         # Desenha retângulo de debug (descomente para ver colisão)
         # pygame.draw.rect(screen, (255, 0, 0), self.get_collision_rect(), 1)
