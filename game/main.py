@@ -25,7 +25,7 @@ pygame.display.set_caption("Genetic Algorithm - Evolução de Criaturas")
 
 # Configurações do jogo
 GROUND_Y = SCREEN_HEIGHT - 100
-GENERATION_TIME = 8  # segundos por geração
+GENERATION_TIME = 15  # segundos por geração
 FPS = 60
 
 # Components
@@ -57,6 +57,9 @@ running = True
 while running:
     delta_time = clock.tick(FPS) / 1000.0  # Delta time em segundos
     
+
+    stats = ga.get_statistics(creatures)
+
     # Eventos
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -78,19 +81,6 @@ while running:
             elif event.key == pygame.K_p:
                 # Pausa/Resume
                 paused = not paused
-            
-            elif event.key == pygame.K_n:
-                # Próxima geração manualmente
-                creatures = ga.evolve(creatures, SCREEN_WIDTH // 2, GROUND_Y)
-                # Ao evoluir manualmente, respawna a maçã em posição aleatória
-                apple_x = random.randint(50, SCREEN_WIDTH - 50)
-                apple_y = 50
-                apple.rect.center = (apple_x, apple_y)
-                generation_timer = 0
-            
-            elif event.key == pygame.K_a:
-                # Toggle auto-evolução
-                auto_evolve = not auto_evolve
     
     if not paused:
         # Timer da geração
@@ -120,7 +110,10 @@ while running:
             creature.is_best = (creature == best_creature)
 
         # Evolui automaticamente quando todas morrerem ou tempo acabar
-        if (all_dead or generation_timer >= GENERATION_TIME) and auto_evolve:
+        if (all_dead or generation_timer >= GENERATION_TIME):
+            
+            print(f"Geração {ga.generation}: {stats}")
+            
             creatures = ga.evolve(creatures, SCREEN_WIDTH // 2, GROUND_Y)
             # Respawna a maçã a cada nova geração para introduzir
             # variabilidade no ambiente (aleatoriedade no spawn)
@@ -139,7 +132,7 @@ while running:
         creature.draw(screen)
     
     # Informações na tela
-    stats = ga.get_statistics(creatures)
+    # stats = ga.get_statistics(creatures)
 
     print(stats)
     

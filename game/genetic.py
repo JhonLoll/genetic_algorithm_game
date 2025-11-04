@@ -6,7 +6,8 @@ class GeneticAlgorithm:
         self.population_size = population_size
         self.generation = 1
         self.best_fitness_history = []
-        self.mutation_rate = 0.05
+        # Mutação adaptiva, diminui com o tempo
+        self.mutation_rate = max(0.01, 0.1 - (self.generation * 0.001)) 
         
     def create_population(self, x, y):
         """Cria população inicial com DNA aleatório"""
@@ -47,7 +48,7 @@ class GeneticAlgorithm:
         child_dna = {}
         
         # Para cada gene, escolhe aleatoriamente de um dos pais ou faz média
-        for gene in parent1.dna:
+        for gene, value in parent1.dna.items():
             if random.random() < 0.5:
                 # Pega do pai 1
                 child_dna[gene] = parent1.dna[gene]
@@ -68,39 +69,39 @@ class GeneticAlgorithm:
         
         # Mutação no comprimento das pernas
         if random.random() < self.mutation_rate:
-            # mutated_dna['leg_length'] = max(20, min(60, 
-            #     mutated_dna['leg_length'] + random.uniform(-10, 10)))
+            mutated_dna['leg_length'] = max(20, min(60, 
+                mutated_dna['leg_length'] + random.uniform(-10, 10)))
         
-            mutated_dna['leg_length'] = max(20, (60 - mutated_dna['body_size'])) #sem controle
+            # mutated_dna['leg_length'] = max(20, (60 - mutated_dna['body_size'])) #sem controle
         
         # Mutação no comprimento do pescoço
         if random.random() < self.mutation_rate:
-            # mutated_dna['neck_length'] = max(15, min(80, 
-            #     mutated_dna['neck_length'] + random.uniform(-15, 15)))
+            mutated_dna['neck_length'] = max(15, min(80, 
+                mutated_dna['neck_length'] + random.uniform(-15, 15)))
 
-            mutated_dna['neck_length'] = max(15, (80 - mutated_dna['leg_length'])) #sem controle
+            # mutated_dna['neck_length'] = max(15, (80 - mutated_dna['leg_length'])) #sem controle
         
         # Mutação no tamanho do corpo
         if random.random() < self.mutation_rate:
-            # mutated_dna['body_size'] = max(15, min(35, 
-            #     mutated_dna['body_size'] + random.uniform(-5, 5)))
+            mutated_dna['body_size'] = max(15, min(35, 
+                mutated_dna['body_size'] + random.uniform(-5, 5)))
 
-            mutated_dna['body_size'] = max(15, (35 - mutated_dna['leg_length'])) #sem controle
+            # mutated_dna['body_size'] = max(15, (35 - mutated_dna['leg_length'])) #sem controle
         
         # Mutação na força do pulo
         if random.random() < self.mutation_rate:
-            # mutated_dna['jump_strength'] = max(8, min(18, 
-            #     mutated_dna['jump_strength'] + random.uniform(-3, 3)))
+            mutated_dna['jump_strength'] = max(8, min(18, 
+                mutated_dna['jump_strength'] + random.uniform(-3, 3)))
 
-            mutated_dna['jump_strength'] = max(8, (18 - mutated_dna['body_size'])) #sem controle
+            # mutated_dna['jump_strength'] = max(8, (18 - mutated_dna['body_size'])) #sem controle
         
 
         # Mutação no timing do pulo
         if random.random() < self.mutation_rate:
-            # mutated_dna['jump_timing'] = max(0.5, min(3.0, 
-            #     mutated_dna['jump_timing'] + random.uniform(-0.5, 0.5)))
+            mutated_dna['jump_timing'] = max(0.5, min(3.0, 
+                mutated_dna['jump_timing'] + random.uniform(-0.5, 0.5)))
 
-            mutated_dna['jump_timing'] = max(0.5, (3.0 - mutated_dna['body_size'])) #sem controle
+            # mutated_dna['jump_timing'] = max(0.5, (3.0 - mutated_dna['body_size'])) #sem controle
 
         # Mutação na cor
         if random.random() < self.mutation_rate:
@@ -176,10 +177,10 @@ class GeneticAlgorithm:
                 'median': 0
             }
 
-        best = max(scores) * 10
-        worst = min(scores) if min(scores) > 1 else min(scores) * -1
-        average = sum(scores) / len(scores) if sum(scores) > 0 else sum(scores) * -1 / len(scores)
-        median = sorted(scores)[len(scores) // 2]
+        best = max(scores)
+        worst = min(scores)
+        average = sum(scores)
+        median = sum(scores) / len(scores)
 
         # Normaliza os valores para evitar médias negativas ou inconsistências
         return {

@@ -161,6 +161,8 @@ class Creature:
         except Exception:
             pass
 
+        self.score = max(0, self.score)
+
     def draw(self, screen):
         if not self.alive:
             return
