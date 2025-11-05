@@ -36,7 +36,7 @@ apple_x = random.randint(50, SCREEN_WIDTH - 50)
 apple_y = 50
 apple = Apple(apple_x, apple_y)
 
-platform = Platform(0, GROUND_Y, SCREEN_WIDTH, 100)
+platform = Platform(GROUND_Y, SCREEN_WIDTH)
 
 # Algoritmo Genético
 ga = GeneticAlgorithm(population_size=100)
@@ -46,7 +46,6 @@ creatures = ga.create_population(SCREEN_WIDTH // 2, GROUND_Y)
 clock = pygame.time.Clock()
 generation_timer = 0
 paused = False
-auto_evolve = True
 
 # Font para informações
 font = pygame.font.Font(None, 32)
@@ -162,8 +161,6 @@ while running:
     instructions = [
         "ESPAÇO: Fazer criaturas pularem",
         "P: Pausar/Continuar",
-        "N: Próxima geração",
-        "A: Auto-evolução " + ("ON" if auto_evolve else "OFF")
     ]
     
     for i, instruction in enumerate(instructions):
